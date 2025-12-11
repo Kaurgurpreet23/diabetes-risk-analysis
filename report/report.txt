@@ -1,1 +1,117 @@
-.
+FINAL PROJECT REPORT
+PREDICTING DIABETES AND HOSPITAL READMISSION:
+A TWO DATASET CLINICAL ANALYSIS
+5100- Foundations of Data Science
+Submitted by:
+Group 8
+Badamgarav Battushig
+Naomi Le Mouel
+Gurpreet Kaur
+Introduction
+Diabetes is a major chronic condition affecting hundreds of millions globally and driving substantial healthcare burden. Early identification of individuals at high risk for diabetes and effective management of diagnosed patients are critical for preventing complications and reducing healthcare utilization. This project focuses on two interconnected but distinct predictive problems: identifying clinical and demographic predictors of diabetes in the general population and identifying predictors of 30-day hospital readmission among patients already diagnosed with diabetes. These goals reflect both prevention and disease-management priorities in public health.
+The first objective leverages a large, diverse Kaggle clinical dataset to determine which measurable factors most strongly distinguish individuals with diabetes from those without. The second objective draws on the U.S. hospital readmission dataset from the UCI Machine Learning Repository to assess whether commonly recorded care-utilization variables can reliably predict early rehospitalization-an important but difficult-to-manage quality metric.
+Together, these analyses help clarify what drives diabetes onset versus challenges in ongoing diabetes management.
+Background & Significance
+Hospital readmission among diabetic patients is a major concern: repeated admissions contribute substantially to healthcare costs, morbidity, and complications. Prior work has shown that poor glycemic control, insufficient monitoring, and inadequate transitions of care contribute to readmission risk. For example, the original study introducing the 130-US Hospitals dataset found that measurement of HbA1c during hospitalization was infrequent (~ 18.4%) and that readmission risk varied significantly depending on whether HbA1c was measured.
+On the other hand, early detection of undiagnosed diabetes (or pre-diabetes) in outpatient or general clinical populations is critical for initiating lifestyle or medical interventions before complications arise. Large-scale efforts to predict diabetes based on clinical risk factors can inform public health screening strategies and individual risk profiling.
+Advances in machine learning over the past decade — including non-linear models, regularization, feature engineering, and ensemble methods — have made it feasible to develop predictive models with reasonable accuracy and interpretability. These models can help identify high-risk patients automatically, potentially guiding clinical decisions or resource allocation. Indeed, recent work has demonstrated success in readmission prediction using both traditional ML and deep-learning methods on the 130-US dataset.
+The 130-US Hospitals dataset was first publicly released by Beata Strack et al. (2014), who used multivariable logistic regression to examine the association between inpatient HbA1c measurement and 30-day readmission, controlling for demographics, admission type, comorbidities, and other covariates.
+More recent studies have applied advanced machine-learning models (e.g., random forests, gradient boosting, embedding-based deep networks) to this dataset for readmission prediction. For instance, embedding-based deep learning models reportedly achieved AUC-ROC as high as 0.97 under three-class readmission classification (>30 days, <30 days, no readmission).
+Simultaneously, there is growing research on predicting diabetes risk in broader populations using ML, combining demographic data, metabolic markers (e.g., HbA1c, blood glucose, BMI), lifestyle factors (e.g., smoking), and comorbidities. A recently published comparative study (2025) highlights the potential of hybrid architectures combining traditional ML, ensemble methods, and deep learning to reach high predictive accuracy for diabetes diagnosis.
+Therefore, our dual-dataset study aligns with current research trends, and aims to replicate and extend previous findings, while providing a transparent, reproducible workflow that can be evaluated at a high level.
+Data: Sources, Features, and Preprocessing
+Dataset 1: Diabetes 130-US Hospitals (1999–2008)
+
+ Source: The dataset is available via the UCI Machine Learning Repository. UCI Machine Learning Repository+1
+
+ Scope: Represents 10 years (1999–2008) of clinical care at 130 U.S. hospitals and integrated delivery networks. Each row corresponds to a single hospital admission (encounter) for a patient diagnosed with diabetes.
+
+ Size: 101,766 encounters.
+
+ Features: 47 (in the UCI description) — including demographic variables (race, gender, age), admission details, hospital-stay variables, payer information, medical specialty of admitting physician, and many binary/categorical variables indicating whether certain diabetic medications were administered.
+
+ Target outcome: Readmission status, especially whether readmission occurred within 30 days
+Preprocessing and cleaning (as applied in this project):
+
+ Removed rows with missing or invalid target readmission values.
+
+ Encoded categorical variables using one-hot encoding (or similar) for modeling but excluded them from correlation or linear-correlation analysis to avoid misinterpretation (in response to earlier feedback).
+
+ For modeling, numeric features (e.g., time_in_hospital, number of procedures, lab tests, number of medications) were normalized or standardized.
+
+ Where appropriate, we created derived or nonlinear features (e.g., polynomial terms of time in hospital; interaction terms between number of lab procedures and number of medications).
+Dataset 2: 100,000 Diabetes Clinical Dataset (Kaggle)
+
+ Source: The dataset titled “100,000 Diabetes Clinical Dataset” on Kaggle, credited to “Choksi, 2023.”
+
+ Scope: A clinical dataset containing 100,000 records (patients), with features including demographic information (gender, age, location), comorbidity indicators, metabolic measures (BMI, HbA1c, blood glucose), and other health-related variables.
+
+ Features: 16 columns, including:
+o year (probably year of record), gender, age, location, race indicators, comorbidity indicators, lifestyle variable , smoking history, metabolic measures (BMI, hba1c_level, blood glucose level), and the target variable diabetes (binary).
+
+ Target outcome: The diabetes column — presumably a binary indicator of diabetes status (e.g., diagnosed vs non-diagnosed).
+Preprocessing and cleaning:
+
+ Checked for missing values; dropped or imputed missing rows for critical variables (e.g., BMI, HbA1c, blood glucose).
+
+ Encoded categorical variables (gender, location, smoking history, race) appropriately (one-hot or dummy variables).
+
+ Standardized numeric features before modeling.
+
+ As with the first dataset, introduced nonlinear transformations (e.g., polynomial of age or BMI, interactions between BMI and HbA1c, blood glucose and comorbidity indicators).
+Methods
+For diabetes diagnosis (Kaggle), the key factors are glycemic markers (HbA1c, blood glucose) plus age, BMI, hypertension, and heart disease.
+For hospital readmission (UCI), the main predictors are treatment intensity / utilization measures: number of medications, time in hospital, and number of diagnoses / prior inpatient visits.
+Because the two datasets capture different aspects of care, there is no single variable directly shared and strongly predictive in both models. The overlap is more conceptual. In both datasets, markers of disease severity and complexity (poor glycemic control, multiple diagnoses, many medications, longer stays) are associated with worse outcomes. However, given the weak performance of the readmission models, we cannot claim strong evidence of common risk factors driving both diagnosis and readmission only that more complex, poorly controlled disease seems to matter in both contexts. Overall, we find suggestive but not definitive overlap in risk factors due to data limitations and poor readmission predictability.
+Given the nature of the two prediction problems (readmission within 30 days; diabetes status), we framed both as binary classification tasks. For each dataset, we applied the following modeling pipeline:
+1. Exploratory Data Analysis (EDA) – summary statistics, distributions, missing data assessment, feature distributions, class imbalance check.
+2. Preprocessing – data cleaning, encoding, normalization, and feature engineering (including nonlinear transformations and interaction terms).
+3. Model training – baseline logistic regression, followed by more flexible models (e.g., Random Forest, Gradient Boosting) to accommodate nonlinear relationships and interactions.
+4. Model evaluation – using stratified cross-validation (e.g., 5-fold), evaluating performance via metrics including accuracy, precision, recall, F1-score, and area under the ROC curve (AUC-ROC). Given class imbalance (particularly readmission may be relatively rare), also consider precision-recall curves.
+Analysis
+Diabetes Dataset
+The ROC curve Linear Regression
+The ROC curve image analysis visually represents the trade-off between the True Positive Rate (sensitivity) and False Positive Rate (1-specificity) for the model across different classification thresholds. The curve rises sharply toward the top-left corner, indicating strong discriminative ability in distinguishing positive cases from negative ones. The area under the curve (AUC) is close to 1, reflecting excellent overall model performance. This visualization helps identify threshold values that balance sensitivity and specificity according to the desired clinical or operational priorities and confirms that the model reliably captures the majority of true positive cases while minimizing false positives.
+Top 15 Predictor Importance
+The Top 15 Predictor Importance (from Random Forest diabetes model) tells us how much each variable contributed to the model’s predictive ability — and importantly, it provides insight into what drives diabetes risk in this dataset.
+The Top 15 predictor importance ranking reveals that glycemic control measures dominate diabetes prediction. HbA1c level emerges as the single most powerful predictor because it directly reflects chronic blood-sugar elevation — the clinical hallmark of diabetes. Blood glucose level follows closely, confirming its role in detecting current hyperglycemia. These two features alone contribute most of the predictive signal in the model, demonstrating that diabetes classification is driven primarily by physiological evidence of impaired glucose regulation.
+Age and BMI also appear as strong contributors. Older adults and individuals with higher body mass index have well-documented increased diabetes risk, consistent with obesity-related insulin resistance and declining pancreatic function with age. Chronic health conditions such as hypertension and heart disease show moderate importance, indicating that cardiometabolic comorbidities provide useful secondary insight into disease presence. Beyond these core clinical variables, demographic variables contribute very little predictive value. Factors like gender and ethnicity do not meaningfully improve prediction when strong biological indicators (HbA1c and glucose) are available. This suggests that demographic patterns of diabetes are largely mediated through underlying clinical risk factors, not
+through inherently differential disease mechanisms in the dataset. Overall, the Top 15 importance results demonstrate that diabetes prediction is best informed by objective biomarkers and basic clinical health status, while medical history and demographics add only marginal benefits. This aligns directly with current clinical practice: screening guidelines are based on glucose measurements, weight, age, and cardiometabolic health — the very risk factors highlighted by the model.
+Comparison of Logistic Regression and Random Forest for Diabetes Prediction
+Comparing the ROC curves of the logistic regression and random forest models highlights their relative discriminative performance. The logistic regression ROC curve shows a strong ability to distinguish between classes, with an AUC of around 0.96, indicating high sensitivity and good overall classification. The random forest ROC curve typically follows a similar pattern but may sometimes achieve a slightly higher AUC due to its ability to capture complex non-linear relationships in the data. While logistic regression provides a simpler, more interpretable model with a smooth curve, the random forest may offer marginally better discrimination at certain thresholds but at the cost of interpretability. Both models demonstrate strong performance, but the choice between them may depend on the priority between model transparency and maximum predictive accuracy.
+Hospital Readmission (UCI dataset)
+The ROC curve Linear Regression
+This ROC curve represents how well the logistic regression model predicts 30-day hospital readmissions. The x-axis shows the False Positive Rate, meaning how often the model incorrectly flags patients who will not be readmitted. The y-axis shows the True Positive Rate, or how often the model correctly identifies patients who will be readmitted. In a highly accurate model, the curve would bend sharply toward the
+top-left corner, indicating strong sensitivity with few false alarms. Here, the curve is closer to the diagonal line, which represents random guessing. The reported AUC of 0.63 suggests the model has modest discriminative ability—better than random, but not strong. This indicates that while the model captures some predictive signal, there is room for improvement in identifying patients at risk of readmission.
+Top 15 Predictor Importance
+This chart shows which variables mattered most to a Random Forest model that predicts whether a patient will be readmitted to the hospital within 30 days. The tallest bar is “number of medications,” which means that taking many medications was the strongest predictor in the model and likely reflects that patients with more complex health conditions are more at risk of returning. The next most important factor was “time in hospital,” suggesting that people who stay longer usually have more serious illnesses. Other features such as the number of inpatient visits and the number of diagnoses also contributed, showing that past hospital history and multiple medical conditions increase the probability of readmission. Outpatient and emergency visit counts were still helpful but had smaller influence compared to the other features. Overall, the model suggests that the likelihood of being readmitted is most closely associated with how complex and ongoing a patient’s health needs are rather than just isolated visits.
+Comparison of Logistic Regression and Random Forest for Diabetes Prediction
+Comparing the ROC analysis of the logistic regression model with the feature importance results of the random forest highlights two different perspectives on predictive modeling. The logistic regression ROC curve reflects the overall discriminative ability of that model, showing only modest separation between readmitted and non-readmitted patients with an AUC of about 0.63, which suggests limited predictive strength. In contrast, the random forest bar chart does not measure accuracy directly but instead identifies which variables most strongly influenced the predictions, with factors such as number of medications and time spent in hospital emerging as key contributors. While the ROC curve focuses on how well the logistic regression distinguishes between classes, the random forest visualization emphasizes which clinical characteristics are most informative for prediction. Together, they illustrate that evaluating a model requires looking not only at its performance, but also at the underlying drivers that shape its decisions.
+Non-Linear Transformation in Regression Model
+Non-Linear model for blood glucose squared
+The OLS regression examines how several clinical variables relate to blood glucose levels and shows that some predictors are statistically significant while others contribute little additional information. The
+model explains about 6% of the variation in glucose (R-squared = 0.060), indicating that while these variables are related to glucose, many other factors are also involved. BMI, hypertension, heart disease, and both the linear and squared HbA1c terms are significant and positively associated with higher glucose, suggesting that individuals with these conditions tend to have elevated levels. The negative coefficient for the linear HbA1c term combined with a positive coefficient for its squared term indicates a non-linear, curved relationship rather than a simple straight-line effect. In contrast, the squared BMI term is not statistically significant, meaning that adding the squared form of BMI does not meaningfully improve prediction beyond the linear BMI measure. The very large condition number suggests multicollinearity, likely because squared terms are correlated with their original variables, which can make coefficient estimates less stable. Overall, the results indicate meaningful associations between clinical risk factors and blood glucose, but they also show that the model captures only a small part of the total variability.
+Non-linear terms to Time in Hospital regression
+This OLS regression examines which factors are associated with the number of days a patient spends in the hospital, and the results indicate that several visit-history variables have statistically strong effects.
+Overall, the model explains about 23% of the variation in time in hospital (R-squared = 0.233), which is a moderate level of explanatory power for observational health data. The number of medications, inpatient visits, and number of diagnoses all have positive and significant coefficients, meaning patients who take more medications, have more previous inpatient encounters, or have more diagnoses tend to stay longer. In contrast, previous outpatient or emergency visits have negative coefficients, suggesting that patients with more activity in those settings may require shorter hospital stays once admitted. Both squared terms—num_medications_sq and number_inpatient_sq—are negative and significant, indicating diminishing returns, or a curved relationship in which the effect of very high medication counts or inpatient history grows more slowly or eventually levels off. The large condition number signals potential multicollinearity due to including squared predictors, but the overall pattern suggests that patients with heavier medication use and more complex medical histories generally remain hospitalized longer.
+Results
+Across the two clinical datasets, predictive performance differed substantially depending on the outcome of interest. In the diabetes dataset, both logistic regression and random forest models achieved very strong discrimination, with AUC values close to 0.96, indicating reliable identification of diabetes status using clinical variables such as HbA1c, blood glucose, BMI, age, hypertension, and heart disease. In contrast, hospital readmission models trained on the UCI dataset showed only modest predictive ability. The logistic regression ROC curve produced an AUC of approximately 0.63, demonstrating limited accuracy in identifying patients who would be readmitted within 30 days. Feature importance from the random forest model showed that medication counts, length of stay, prior inpatient encounters, and number of diagnoses were most influential, but despite these associations, predictive performance remained weak. Non-linear OLS models additionally showed meaningful relationships between clinical variables and both blood glucose levels and time in hospital, including significant curved effects from polynomial terms, although the overall variance explained was relatively small. Taken together, these results suggest that diabetes onset is highly predictable using common clinical measures, whereas short-term readmission is considerably more difficult to model using standard administrative variables alone.
+Conclusion
+This project set out to answer three related questions regarding predictors of diabetes and predictors of hospital readmission in diabetic patients. For diabetes risk in the general population, we found strong and clinically expected results: HbA1c, blood glucose, age, BMI, hypertension, and heart disease were the primary drivers of diagnosis. The models performed very well, suggesting these common clinical measures provide sufficient information for reliable screening and identification efforts.
+For 30-day readmission, however, we learned that prediction is far more challenging. Variables typically recorded in hospital administrative systems—medication counts, length of stay, prior admissions—offered only weak predictive insight. Even the best model performed little better than chance, meaning more comprehensive clinical and socioeconomic data would be needed for actionable readmission risk stratification.
+Regarding whether shared systemic risk factors influence both outcomes, we observed only broad thematic overlap: patients with more severe or complex disease tend to show worse outcomes in both
+settings. However, due to the minimal predictive strength of the readmission models, this cannot be interpreted as strong evidence of common drivers.
+Overall, the findings emphasize that diabetes onset can be predicted well through biological markers, while hospital readmission cannot be predicted effectively from limited utilization-based data. Future work should incorporate richer clinical details, medication adherence data, and social determinants of health to create more robust predictive models that could improve care coordination and reduce avoidable hospitalizations.
+References
+
+ Strack B, DeShazo JP, Gennings C, Olmo J L, Ventura S, Cios K J, Clore J. 2014. Impact of HbA1c measurement on hospital readmission rates: analysis of 70,000 clinical database patient records. BioMed Research International, 2014. VCU Scholars Compass+1
+
+ Diabetes 130-US Hospitals for Years 1999-2008. UCI Machine Learning Repository (2014). UCI Machine Learning Repository+1
+
+ 100,000 Diabetes Clinical Dataset. Kaggle (Choksi, 2023). Baselight+1
+
+ Zarghani A. et al. 2024. Comparative Analysis of LSTM Neural Networks and Traditional Machine Learning Models for Predicting Diabetes Patient Readmission. arXiv. arXiv
+
+ Sarthak, Shukla & Tripathi (2020). EmbPred30: Assessing 30-days Readmission for Diabetic Patients using Categorical Embeddings. arXiv. arXiv
+
+ Hasan M., Yasmin F. 2025. Predicting Diabetes Using Machine Learning: A Comparative Study of Classifiers. arXiv.
